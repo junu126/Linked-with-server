@@ -60,5 +60,36 @@ module.exports = (sequelize, DataTypes) => {
         timestamps: false,
     });
 
+    Group.cnt = () => Group.findAndCountAll();
+
+    Group.oneItem = (id) => sequelize.query(`
+        select creator, date_format(createdDate, '%Y-%m-%d') as createdDate,
+        date_format(finishedDate, '%Y-%m-%d') as finishedDatem, profileImg,
+        allMembers, roomStatus, title, contents, purchaseLink, price from groups
+    `), {
+        type: sequelize.QueryTypes.SELECT,
+        raw: true,
+    }
+
+    Group.photoUpload = (id, path) => Group.update(
+        {
+            profileImg: path,
+        },
+        {
+            where: { id: id }
+        }
+    );
+
+    Group.joinBuying = (id, email) => Group.update(
+        {
+            joinedUser: email,
+        },
+        {
+            where: {
+                id: id
+            }
+        }
+    )
+
     return Group;
 }
